@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vishal Prakash Kale — Backend Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --bg2: #111111;
+            --bg3: #161616;
+            --border: #222222;
+            --amber: #f5a623;
+            --amber-dim: #c4821a;
+            --amber-glow: rgba(245, 166, 35, 0.12);
+            --green: #4ade80;
+            --text: #e8e8e8;
+            --muted: #666;
+            --subtle: #333;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* NOISE TEXTURE OVERLAY */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.6;
+        }
+
+        /* GRID LINES */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(245, 166, 35, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(245, 166, 35, 0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 3rem;
+            border-bottom: 1px solid var(--border);
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--amber);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-logo span {
+            color: var(--text);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--amber);
+        }
+
+        /* SECTIONS */
+        section {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+        }
+
+        /* HERO */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-top: 8rem;
+        }
+
+        .hero-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--amber);
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.6s 0.2s forwards;
+        }
+
+        .hero-tag::before {
+            content: '';
+            display: block;
+            width: 20px;
+            height: 1px;
+            background: var(--amber);
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 800;
+            line-height: 1.0;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.35s forwards;
+        }
+
+        h1 .amber {
+            color: var(--amber);
+        }
+
+        .hero-desc {
+            max-width: 560px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.9;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.5s forwards;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 0.7s 0.65s forwards;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.7rem 1.5rem;
+            border: 1px solid var(--amber);
+            color: var(--amber);
+            text-decoration: none;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--amber);
+            transform: translateX(-101%);
+            transition: transform 0.25s ease;
+            z-index: -1;
+        }
+
+        .btn:hover {
+            color: #000;
+        }
+
+        .btn:hover::before {
+            transform: translateX(0);
+        }
+
+        .btn-ghost {
+            border-color: var(--subtle);
+            color: var(--muted);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        .btn-ghost::before {
+            background: var(--subtle);
+        }
+
+        /* STATS ROW */
+        .stats-row {
+            display: flex;
+            gap: 3rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+            opacity: 0;
+            animation: fadeUp 0.7s 0.8s forwards;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--amber);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* SECTION HEADERS */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .section-num {
+            font-size: 0.65rem;
+            color: var(--amber);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .section-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* EXPERIENCE */
+        .exp-item {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            border-left: 1px solid var(--border);
+            padding-left: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .exp-item::before {
+            content: '';
+            position: absolute;
+            left: -4px;
+            top: 6px;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--amber);
+            box-shadow: 0 0 10px var(--amber);
+        }
+
+        .exp-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .exp-company {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+        }
+
+        .exp-date {
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        .exp-role {
+            color: var(--amber);
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .exp-bullets {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .exp-bullets li {
+            font-size: 0.8rem;
+            color: #999;
+            padding-left: 1.2rem;
+            position: relative;
+        }
+
+        .exp-bullets li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--amber-dim);
+        }
+
+        .exp-bullets li strong {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* SKILLS */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .skill-tag {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            padding: 0.6rem 1rem;
+            font-size: 0.72rem;
+            color: #bbb;
+            letter-spacing: 0.04em;
+            transition: all 0.2s;
+            cursor: default;
+            text-align: center;
+        }
+
+        .skill-tag:hover {
+            border-color: var(--amber);
+            color: var(--amber);
+            background: var(--amber-glow);
+        }
+
+        /* PROJECTS */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            padding: 1.75rem;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--amber);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .project-card:hover {
+            border-color: var(--subtle);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .project-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .project-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .project-link {
+            color: var(--amber);
+            text-decoration: none;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .project-link:hover {
+            opacity: 1;
+        }
+
+        .project-desc {
+            font-size: 0.77rem;
+            color: #777;
+            line-height: 1.8;
+            margin-bottom: 1.25rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .project-tag {
+            background: var(--bg3);
+            border: 1px solid #222;
+            padding: 0.2rem 0.55rem;
+            font-size: 0.65rem;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* CONTACT */
+        #contact {
+            border-top: 1px solid var(--border);
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        .contact-text h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+
+        .contact-text p {
+            color: var(--muted);
+            font-size: 0.8rem;
+            line-height: 1.9;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 0.8rem;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--border);
+            background: var(--bg2);
+            transition: all 0.2s;
+        }
+
+        .contact-link:hover {
+            border-color: var(--amber);
+            color: var(--amber);
+            background: var(--amber-glow);
+        }
+
+        .contact-link-icon {
+            font-size: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* CURSOR BLINK */
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--amber);
+            margin-left: 3px;
+            vertical-align: middle;
+            animation: blink 1.1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* SCROLL REVEAL */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* TERMINAL BLOCK */
+        .terminal {
+            background: var(--bg3);
+            border: 1px solid var(--border);
+            border-radius: 0;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            font-size: 0.78rem;
+        }
+
+        .terminal-bar {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .t-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .t-red {
+            background: #ff5f56;
+        }
+
+        .t-yellow {
+            background: #ffbd2e;
+        }
+
+        .t-green {
+            background: #27c93f;
+        }
+
+        .terminal-line {
+            color: #777;
+        }
+
+        .terminal-line .prompt {
+            color: var(--amber);
+        }
+
+        .terminal-line .cmd {
+            color: var(--green);
+        }
+
+        .terminal-line .val {
+            color: #e8e8e8;
+        }
+
+        /* SECTION DIVIDER */
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 0;
+        }
+
+        /* MOBILE */
+        @media (max-width: 640px) {
+            nav {
+                padding: 1rem 1.25rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 4rem 1.25rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+                letter-spacing: -1px;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            footer {
+                padding: 1.5rem 1.25rem;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-row {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo"><span></span></div>
+        <ul class="nav-links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section id="hero">
+        <div class="hero-tag">Backend Software Engineer</div>
+        <h1>Vishal<br>Prakash<br><span class="amber">Kale.</span></h1>
+        <p class="hero-desc">
+            Building production-grade APIs and microservices with Node.js — specialising in PostgreSQL optimisation,
+            Redis caching, Kafka event streaming, and transactional backend systems that scale.
+        </p>
+        <div class="hero-cta">
+            <a href="#experience" class="btn">View Work</a>
+            <a href="mailto:vishalpkale88301@gmail.com" class="btn btn-ghost">Get In Touch</a>
+        </div>
+        <div class="stats-row">
+            <div class="stat-item">
+                <span class="stat-num">2.5+</span>
+                <span class="stat-label">Years experience</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">45%</span>
+                <span class="stat-label">Latency reduction</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">60%</span>
+                <span class="stat-label">Query speedup</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">85+</span>
+                <span class="stat-label">Countries served</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ABOUT / TERMINAL -->
+    <section id="about">
+        <div class="section-header reveal">
+            <span class="section-num">01 /</span>
+            <h2>About</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="terminal reveal">
+            <div class="terminal-bar">
+                <div class="t-dot t-red"></div>
+                <div class="t-dot t-yellow"></div>
+                <div class="t-dot t-green"></div>
+            </div>
+            <div class="terminal-line"><span class="prompt">$ </span><span class="cmd">whoami</span></div>
+            <div class="terminal-line" style="padding-left:1rem; color:#bbb; margin-bottom:0.5rem;">Vishal Prakash Kale
+                — SDE-1 Backend Engineer, Pune, India</div>
+            <div class="terminal-line"><span class="prompt">$ </span><span class="cmd">cat</span> <span
+                    class="val">skills.json</span></div>
+            <div class="terminal-line" style="padding-left:1rem; color:#bbb; margin-bottom:0.5rem;">{ runtime:
+                "Node.js", db: "PostgreSQL", cache: "Redis", queue: "Kafka", ... }</div>
+            <div class="terminal-line"><span class="prompt">$ </span><span class="cmd">git log</span> --oneline
+                --notable</div>
+            <div class="terminal-line" style="padding-left:1rem; color:#bbb; margin-bottom:0.5rem;">⚡ Reduced p95
+                latency 45% via Redis caching at EnviStride</div>
+            <div class="terminal-line" style="padding-left:1rem; color:#bbb; margin-bottom:0.5rem;">⚡ Improved query
+                response time ~60% with indexing & pagination</div>
+            <div class="terminal-line" style="padding-left:1rem; color:#bbb; margin-bottom:0.5rem;">⚡ Increased eSIM
+                system throughput ~65% with async caching</div>
+            <div class="terminal-line"><span class="prompt">$ </span><span class="cursor"></span></div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+    <section id="experience">
+        <div class="section-header reveal">
+            <span class="section-num">02 /</span>
+            <h2>Experience</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="exp-item reveal">
+            <div class="exp-meta">
+                <span class="exp-company">EnviStride Pvt Ltd</span>
+                <span class="exp-date">Jan 2025 — Present</span>
+            </div>
+            <div class="exp-role">Backend Systems Engineer</div>
+            <ul class="exp-bullets">
+                <li>Built and maintained backend services for <strong>ESG workflow automation</strong> used by multiple
+                    enterprise clients.</li>
+                <li>Designed transactional PostgreSQL pipelines ensuring <strong>idempotent request handling</strong>
+                    and rollback safety.</li>
+                <li>Implemented <strong>Redis caching</strong> which reduced p95 API latency by ~45%.</li>
+                <li>Built background workers for scheduled tasks, retries, and data processing.</li>
+                <li>Implemented rate limiting, audit logging, and soft delete workflows.</li>
+                <li>Optimised slow queries using <strong>indexing and pagination</strong> — improved response time by
+                    ~60%.</li>
+            </ul>
+        </div>
+
+        <div class="exp-item reveal">
+            <div class="exp-meta">
+                <span class="exp-company">Kryptonic Infolab</span>
+                <span class="exp-date">July 2023 — Aug 2024</span>
+            </div>
+            <div class="exp-role">Backend Engineer</div>
+            <ul class="exp-bullets">
+                <li>Built <strong>Kafka-based microservices</strong> for payment and notification pipelines.</li>
+                <li>Implemented secure payment APIs with retry, failure recovery, and transactional consistency.</li>
+                <li>Designed PostgreSQL schemas with foreign keys and optimised joins.</li>
+                <li>Implemented <strong>Redis caching</strong>, session management, and token revocation layers.</li>
+                <li>Built cron jobs and async workers for background processing.</li>
+            </ul>
+        </div>
+
+        <div class="exp-item reveal">
+            <div class="exp-meta">
+                <span class="exp-company">FunctionUp</span>
+                <span class="exp-date">Aug 2022 — Jan 2023</span>
+            </div>
+            <div class="exp-role">Backend Developer Trainee</div>
+            <ul class="exp-bullets">
+                <li>Built REST APIs using <strong>Node.js and MongoDB</strong>.</li>
+                <li>Implemented authentication, validation, and schema design.</li>
+                <li>Delivered multiple backend modules under strict timelines.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+        <div class="section-header reveal">
+            <span class="section-num">03 /</span>
+            <h2>Projects</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="projects-grid">
+            <div class="project-card reveal">
+                <div class="project-header">
+                    <div class="project-name">EnviStride ESG SaaS Platform</div>
+                    <a href="https://www.envistride.com/" target="_blank" rel="noopener" class="project-link">↗</a>
+                </div>
+                <p class="project-desc">
+                    Enterprise ESG compliance workflows for data collection, analysis, and reporting. Scalable
+                    transactional pipelines handling concurrent tenant data with background report generation and audit
+                    trails.
+                </p>
+                <div class="project-tags">
+                    <span class="project-tag">Node.js</span>
+                    <span class="project-tag">PostgreSQL</span>
+                    <span class="project-tag">Redis</span>
+                    <span class="project-tag">Workers</span>
+                    <span class="project-tag">Multi-tenant</span>
+                </div>
+            </div>
+
+            <div class="project-card reveal">
+                <div class="project-header">
+                    <div class="project-name">Microservices Payment Integration</div>
+                    <a href="https://www.fundedhere.com/" target="_blank" rel="noopener" class="project-link">↗</a>
+                </div>
+                <p class="project-desc">
+                    Queue-driven payment pipelines with Kafka. Retry logic, idempotency guarantees, and rollback
+                    mechanisms ensuring transaction safety and failure recovery across distributed services.
+                </p>
+                <div class="project-tags">
+                    <span class="project-tag">Kafka</span>
+                    <span class="project-tag">Node.js</span>
+                    <span class="project-tag">PostgreSQL</span>
+                    <span class="project-tag">Idempotency</span>
+                    <span class="project-tag">Microservices</span>
+                </div>
+            </div>
+
+            <div class="project-card reveal">
+                <div class="project-header">
+                    <div class="project-name">E-SimZ</div>
+                    <a href="https://play.google.com/store/apps/details?id=com.simez.simez&pcampaignid=web_share"
+                        target="_blank" rel="noopener" class="project-link">↗</a>
+                </div>
+                <p class="project-desc">
+                    Backend serving eSIM provisioning across 85+ countries. Caching and async document processing
+                    improved system throughput by ~65%. Secure storage and multi-region data handling.
+                </p>
+                <div class="project-tags">
+                    <span class="project-tag">Node.js</span>
+                    <span class="project-tag">Redis</span>
+                    <span class="project-tag">Async workers</span>
+                    <span class="project-tag">Storage</span>
+                    <span class="project-tag">85+ Countries</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+        <div class="section-header reveal">
+            <span class="section-num">04 /</span>
+            <h2>Skills</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="skills-grid reveal">
+            <div class="skill-tag">Node.js</div>
+            <div class="skill-tag">PostgreSQL</div>
+            <div class="skill-tag">Redis</div>
+            <div class="skill-tag">Kafka</div>
+            <div class="skill-tag">MongoDB</div>
+            <div class="skill-tag">Docker</div>
+            <div class="skill-tag">Git</div>
+            <div class="skill-tag">REST APIs</div>
+            <div class="skill-tag">Microservices</div>
+            <div class="skill-tag">Caching</div>
+            <div class="skill-tag">Message Queues</div>
+            <div class="skill-tag">Transactions</div>
+            <div class="skill-tag">Indexing</div>
+            <div class="skill-tag">Pagination</div>
+            <div class="skill-tag">Rate Limiting</div>
+            <div class="skill-tag">DSA</div>
+            <div class="skill-tag">OOPS</div>
+            <div class="skill-tag">SQL Optimisation</div>
+        </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+        <div class="section-header reveal">
+            <span class="section-num">05 /</span>
+            <h2>Contact</h2>
+            <div class="section-line"></div>
+        </div>
+
+        <div class="contact-grid">
+            <div class="contact-text reveal">
+                <h3>Let's build something great.</h3>
+                <p>
+                    Open to backend engineering roles, contract work, and interesting problems involving distributed
+                    systems, API design, and performance-critical backends.
+                </p>
+            </div>
+
+            <div class="contact-links reveal">
+                <a href="mailto:vishalpkale88301@gmail.com" class="contact-link">
+                    <span class="contact-link-icon">✉</span>
+                    vishalpkale88301@gmail.com
+                </a>
+                <a href="https://linkedin.com/in/vishalpkale0408" target="_blank" class="contact-link">
+                    <span class="contact-link-icon">in</span>
+                    linkedin.com/in/vishalpkale0408
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <span>© 2025 Vishal Prakash Kale</span>
+        <span>Backend Engineer · Pune, India</span>
+    </footer>
+
+    <script>
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Stagger project cards
+        document.querySelectorAll('.project-card.reveal').forEach((el, i) => {
+            el.style.transitionDelay = `${i * 0.1}s`;
+        });
+
+        // Stagger skill tags
+        document.querySelectorAll('.skill-tag').forEach((el, i) => {
+            el.style.transition = `all 0.2s ease ${i * 0.02}s`;
+        });
+    </script>
+</body>
+
+</html>
